@@ -1,0 +1,11 @@
+Here's a demo in demo. JPG
+
+The IN and OUT button is used to select the input and output paths, and different buttons perform different functions
+
+The LSR-GUI comprises the following functions:
+1. Image preprocessing
+2. Seedling image segmentation
+3. Neural network-based image segmentation
+4. Extraction of skeleton information from segmented images
+5. Retrieval of pixel information from segmented images
+6. Conversion of skeleton information into phenotype measurement
