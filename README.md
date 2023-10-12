@@ -13,6 +13,8 @@ The LSR-GUI comprises the following functions:
 6. Conversion of skeleton information into phenotype measurement
 
 Programs and demo videos can not be uploaded due to file size restrictions, please refer to:
+
 Google Drive：https://drive.google.com/drive/folders/1RvTbjt4koDhzfyo20CKTptQwatbfw0TC?usp=sharing
+
 百度云：https://pan.baidu.com/s/1SCkrRLX4CD_Tx1HKYCn6Yw Code：lkh4
 
