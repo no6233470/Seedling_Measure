@@ -5,10 +5,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import nn
-
 from unet_model import Unet as unet
 from utils import cvtColor, preprocess_input, resize_image
-
 
 class Unet(object):
     _defaults = {
@@ -20,7 +18,6 @@ class Unet(object):
         "cuda"          : False,
     }
 
-    #   初始化UNET
     def __init__(self, **kwargs):
         self.__dict__.update(self._defaults)
         for name, value in kwargs.items():
@@ -36,7 +33,6 @@ class Unet(object):
             self.colors = list(map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), self.colors))
         self.generate()
 
-    #   获得所有的分类
     def generate(self, onnx=False):
         self.net = unet(num_classes = self.num_classes, backbone=self.backbone)
 
@@ -49,7 +45,6 @@ class Unet(object):
                 self.net = nn.DataParallel(self.net)
                 self.net = self.net.cuda()
 
-    #   检测图片
     def detect_image(self, image):
         image       = cvtColor(image)
         old_img     = copy.deepcopy(image)
@@ -62,16 +57,12 @@ class Unet(object):
             images = torch.from_numpy(image_data)
             if self.cuda:
                 images = images.cuda()
-            #   图片传入网络进行预测
             pr = self.net(images)[0]
-            #   取出每一个像素点的种类
             pr = F.softmax(pr.permute(1,2,0),dim = -1).cpu().numpy()
             pr = pr[int((self.input_shape[0] - nh) // 2) : int((self.input_shape[0] - nh) // 2 + nh), \
                     int((self.input_shape[1] - nw) // 2) : int((self.input_shape[1] - nw) // 2 + nw)]
             pr = cv2.resize(pr, (orininal_w, orininal_h), interpolation = cv2.INTER_LINEAR)
-            #   取出每一个像素点的种类
             pr = pr.argmax(axis=-1)
-
             seg_img1 = (np.expand_dims(pr == 1, -1) * np.array(old_img, np.float32)).astype('uint8')
             seg_img2 = (np.expand_dims(pr == 2, -1) * np.array(old_img, np.float32)).astype('uint8')
             seg_img3 = (np.expand_dims(pr == 3, -1) * np.array(old_img, np.float32)).astype('uint8')

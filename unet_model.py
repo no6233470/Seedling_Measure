@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
-
 from vgg import VGG16
-
 
 class unetUp(nn.Module):
     def __init__(self, in_size, out_size):
@@ -32,15 +30,10 @@ class Unet(nn.Module):
         else:
             raise ValueError('Unsupported backbone - `{}`, Use vgg, resnet50.'.format(backbone))
         out_filters = [64, 128, 256, 512]
-
         # upsampling
-        # 64,64,512
         self.up_concat4 = unetUp(in_filters[3], out_filters[3])
-        # 128,128,256
         self.up_concat3 = unetUp(in_filters[2], out_filters[2])
-        # 256,256,128
         self.up_concat2 = unetUp(in_filters[1], out_filters[1])
-        # 512,512,64
         self.up_concat1 = unetUp(in_filters[0], out_filters[0])
 
         if backbone == 'resnet50':
@@ -63,17 +56,13 @@ class Unet(nn.Module):
             [feat1, feat2, feat3, feat4, feat5] = self.vgg.forward(inputs)
         elif self.backbone == "resnet50":
             [feat1, feat2, feat3, feat4, feat5] = self.resnet.forward(inputs)
-
         up4 = self.up_concat4(feat4, feat5)
         up3 = self.up_concat3(feat3, up4)
         up2 = self.up_concat2(feat2, up3)
         up1 = self.up_concat1(feat1, up2)
-
         if self.up_conv != None:
             up1 = self.up_conv(up1)
-
         final = self.final(up1)
-        
         return final
 
     def freeze_backbone(self):
